@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://dpg-d7aivi94tr6s73bndfng-a.oregon-postgres.render.com:5432/boysdb?sslmode=require
+    username: boysdb_user
+    password: eVGUefoAmYY9lbYBELFARhPuZg4zmIwy
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+server:
+  port: 8080
