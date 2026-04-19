@@ -1,11 +1,13 @@
 package com.example.bank.customer.dto;
 
-import lombok.Data;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
-@Data
-public class RegisterRequest {
-    private String firstName;
-    private String lastName;
-    private String email;
-    private String password;
+public record RegisterRequest(
+        @NotBlank String firstName,
+        @NotBlank String lastName,
+        @Email @NotBlank String email,
+        @NotBlank @Size(min = 8, max = 128) String password
+) {
 }
