@@ -1,8 +1,8 @@
 CONFIG = {
     "weights": {
-        "amount": 0.25,
+        "amount": 0.2,
         "keyword": 0.2,
-        "embedding": 0.35,
+        "embedding": 0.5,
         "anomaly": 0.1,
         "entropy": 0.1,
     },

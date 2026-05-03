@@ -10,8 +10,8 @@ from app.ml.utils.preprocessing import normalize_text
 
 
 def final_score(raw_score):
-    scaled = sigmoid(raw_score * 3 * CONFIG["aggressiveness"])
-    return scaled * 100
+    scaled = max(0, min(100, raw_score * 100))
+    return raw_score * 100
 
 
 def aggregate(features):
@@ -29,18 +29,29 @@ def aggregate(features):
 
 
 def compute_risk(payment, model, template_embeddings):
+    print("MODEL:", type(model))
+    print("EMB:", type(template_embeddings))
+    print("EMB SHAPE:", getattr(template_embeddings, "shape", None))
     text = normalize_text(payment.message)
 
     features = {
         "amount": amount_score(payment.amount),
         "keyword": keyword_score(text),
         "embedding": embedding_score(text, template_embeddings, model),
-        "anomaly": anomaly_score(text),
-        "entropy": text_entropy(text),
+        "anomaly": max(0, anomaly_score(text) - 0.2),
+        "entropy": max(0, text_entropy(text) - 0.2),
     }
+
+    if not text.strip():
+        features["anomaly"] += 0.3
+
+    if features["amount"] <= 10 and features["keyword"] == 0:
+        return 0, explain(features)
 
     raw = aggregate(features)
     raw += noise()
+
+    print("RAW SCORE:", raw)
 
     risk = final_score(raw)
 

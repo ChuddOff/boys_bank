@@ -35,7 +35,7 @@ def save_cache(file_hash: str, templates: list[str], embeddings: np.ndarray):
     data = {
         "hash": file_hash,
         "templates": templates,
-        "embeddings": embeddings.tolist()
+        "embeddings": np.asarray(embeddings, dtype=np.float32).tolist()
     }
 
     with open(CACHE_PATH, "w", encoding="utf-8") as f:
@@ -47,7 +47,12 @@ def load_cache():
     with open(CACHE_PATH, "r", encoding="utf-8") as f:
         data = json.load(f)
 
-    embeddings = np.array(data["embeddings"])
+    embeddings = np.asarray(data["embeddings"], dtype=np.float32)
+
+    # 💣 жесткая защита
+    if embeddings.ndim != 2:
+        embeddings = np.stack(embeddings).astype(np.float32)
+
     templates = data["templates"]
     file_hash = data["hash"]
 
@@ -80,9 +85,12 @@ def load_or_create_embeddings(model: SentenceTransformer):
 
     embeddings = model.encode(
         templates,
-        convert_to_numpy=True,
-        show_progress_bar=True
+        convert_to_numpy=True
     )
+
+    embeddings = np.asarray(embeddings, dtype=np.float32)
+
+    assert embeddings.ndim == 2, embeddings.shape
 
     save_cache(current_hash, templates, embeddings)
 

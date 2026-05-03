@@ -1,5 +1,5 @@
-import math
+import numpy as np
 
 
 def amount_score(amount):
-    return min(math.log1p(amount) / 10, 1.0)
+    return min(1.0, np.log10(amount + 1) / 5)
