@@ -1,23 +1,26 @@
 import logging
 
-from app.models.payment import PaymentRequest
+from app.ml.config import CONFIG
+from app.ml.pipeline import compute_risk
+from app.ml.runtime import get_model, get_embeddings
+from app.models.payment import FraudCheckRequest
 
 logger = logging.getLogger(__name__)
 
 
 class FraudService:
 
-    def check(self, payment: PaymentRequest):
+    def check(self, payment: FraudCheckRequest):
         logger.info(f"Checking payment: {payment}")
 
-        # пока заглушка
-        score = 0.0
+        model = get_model()
+        _, template_embeddings = get_embeddings()
+
+        risk, features = compute_risk(payment, model, template_embeddings)
 
         return {
-            "fraud_score": score,
-            "details": {
-                "metadata_score": 0.0,
-                "text_score": 0.0,
-                "note": "algorithm not implemented yet"
-            }
+            "suspicious": risk > CONFIG["thresholds"]["suspicious"],
+            "riskScore": risk,
+            "reason": features,
+            "source": "ml-service"
         }

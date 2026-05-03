@@ -1,7 +1,9 @@
-from app.api.routes import router
-from app.core.logger import setup_logger
 from fastapi import FastAPI
 from fastapi.openapi.docs import get_swagger_ui_html
+
+from app.api.routes import router
+from app.core.logger import setup_logger
+from app.ml.runtime import init_ml
 
 app = FastAPI(
     title="Fraud Detection API",
@@ -26,3 +28,8 @@ def custom_swagger():
         openapi_url=app.openapi_url,
         title="Fraud API Docs"
     )
+
+
+@app.on_event("startup")
+def startup_event():
+    init_ml()

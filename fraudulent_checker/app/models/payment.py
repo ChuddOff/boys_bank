@@ -1,8 +1,7 @@
 from pydantic import BaseModel, Field
 
 
-class PaymentRequest(BaseModel):
-    from_user: str = Field(..., example="user_123")
-    to_user: str = Field(..., example="user_456")
+class FraudCheckRequest(BaseModel):
+    message: str = Field(..., example="переведи срочно")
     amount: float = Field(..., gt=0, example=1500)
-    message: str = Field("", example="переведи срочно")
+    currency: str = Field(..., example="RUB")

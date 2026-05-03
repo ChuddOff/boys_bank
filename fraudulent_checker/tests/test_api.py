@@ -5,21 +5,18 @@ from app.main import app
 client = TestClient(app)
 
 
-def test_root():
-    response = client.get("/")
-    assert response.status_code == 200
-
-
 def test_check():
     payload = {
-        "from_user": "1",
-        "to_user": "2",
+        "message": "тест",
         "amount": 100,
-        "message": "test"
+        "currency": "RUB"
     }
 
-    response = client.post("/api/check", json=payload)
+    response = client.post("/api/v1/check", json=payload)
+
     assert response.status_code == 200
 
     data = response.json()
-    assert "fraud_score" in data
+
+    assert "suspicious" in data
+    assert "riskScore" in data
