@@ -6,6 +6,9 @@ public record DonationCampaignResponse(
         Long id,
         String title,
         String description,
+        String category,
+        String sourceUrl,
+        String impact,
         Long targetAccountId,
         BigDecimal collectedAmount,
         Boolean active

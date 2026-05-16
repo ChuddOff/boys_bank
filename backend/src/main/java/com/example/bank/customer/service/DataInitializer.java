@@ -7,6 +7,8 @@ import com.example.bank.customer.entity.Customer;
 import com.example.bank.customer.entity.Role;
 import com.example.bank.customer.repository.CustomerRepository;
 import com.example.bank.customer.repository.RoleRepository;
+import com.example.bank.donation.entity.DonationCampaign;
+import com.example.bank.donation.repository.DonationCampaignRepository;
 import com.example.bank.transaction.entity.BankTransaction;
 import com.example.bank.transaction.entity.TransactionType;
 import com.example.bank.transaction.repository.TransactionRepository;
@@ -29,6 +31,7 @@ public class DataInitializer {
     private final CustomerRepository customerRepository;
     private final BankAccountRepository accountRepository;
     private final TransactionRepository transactionRepository;
+    private final DonationCampaignRepository donationCampaignRepository;
     private final PasswordEncoder passwordEncoder;
 
     @PostConstruct
@@ -38,9 +41,46 @@ public class DataInitializer {
         Role admin = createRoleIfNotExists("ADMIN");
         Customer demo = createCustomerIfNotExists("demo@boys.bank", "Demo", "User", user);
         Customer adminUser = createCustomerIfNotExists("admin@boys.bank", "Admin", "Bank", admin);
+        Customer charityUser = createCustomerIfNotExists("charity@boys.bank", "Charity", "Partners", user);
         BankAccount demoAccount = createAccountIfNotExists(demo, "RU00BANK000000001", AccountType.CURRENT, BigDecimal.valueOf(125000));
         BankAccount savings = createAccountIfNotExists(demo, "RU00BANK000000002", AccountType.SAVINGS, BigDecimal.valueOf(450000));
         BankAccount adminAccount = createAccountIfNotExists(adminUser, "RU00BANK000000003", AccountType.CURRENT, BigDecimal.valueOf(90000));
+        BankAccount podariZhizn = createAccountIfNotExists(charityUser, "RU00BANK000000101", AccountType.DONATION, BigDecimal.ZERO, "Подари жизнь", "Благотворительность", 0);
+        BankAccount lifeLine = createAccountIfNotExists(charityUser, "RU00BANK000000102", AccountType.DONATION, BigDecimal.ZERO, "Линия Жизни", "Благотворительность", 0);
+        BankAccount detfond = createAccountIfNotExists(charityUser, "RU00BANK000000103", AccountType.DONATION, BigDecimal.ZERO, "Российский детский фонд", "Благотворительность", 0);
+        BankAccount dogsWhoLove = createAccountIfNotExists(charityUser, "RU00BANK000000104", AccountType.DONATION, BigDecimal.ZERO, "Собаки, которые любят", "Благотворительность", 0);
+        createCampaignIfNotExists(
+                "Подари жизнь",
+                "Помощь детям с тяжелыми заболеваниями: лечение, лекарства и реабилитация.",
+                "Дети и медицина",
+                "https://www.podaryzhizn.info/",
+                "Фонд указывает, что помогает детям получить необходимое лечение, лекарства и реабилитацию.",
+                podariZhizn
+        );
+        createCampaignIfNotExists(
+                "Линия Жизни",
+                "Поддержка детей с заболеваниями, которые способна победить современная медицина.",
+                "Дети и медицина",
+                "https://www.life-line.ru/",
+                "Пожертвование направляется на медицинские программы и адресную помощь детям.",
+                lifeLine
+        );
+        createCampaignIfNotExists(
+                "Российский детский фонд",
+                "Помощь детям, семьям, детским учреждениям и программам защиты детства по России.",
+                "Дети и семьи",
+                "https://detfond.org/",
+                "Поддерживает социальные и медицинские проекты для детей в регионах.",
+                detfond
+        );
+        createCampaignIfNotExists(
+                "Собаки, которые любят",
+                "Системная помощь бездомным собакам и кошкам: лечение, корм, приюты и поиск дома.",
+                "Животные",
+                "https://www.fund4dogs.ru/",
+                "Фонд помогает животным в приютах, оплачивает ветеринарную помощь, корм и социализацию.",
+                dogsWhoLove
+        );
         if (transactionRepository.findByFromAccountOwnerEmailOrToAccountOwnerEmailOrderByCreatedAtDesc(demo.getEmail(), demo.getEmail()).isEmpty()) {
             transactionRepository.save(BankTransaction.builder()
                     .fromAccount(demoAccount)
@@ -80,13 +120,34 @@ public class DataInitializer {
     }
 
     private BankAccount createAccountIfNotExists(Customer owner, String iban, AccountType type, BigDecimal balance) {
+        return createAccountIfNotExists(owner, iban, type, balance, "Boys Everyday", "Стандарт", 50);
+    }
+
+    private BankAccount createAccountIfNotExists(Customer owner, String iban, AccountType type, BigDecimal balance, String productName, String packageName, Integer monthlyTransfersLimit) {
         return accountRepository.findByIban(iban).orElseGet(() -> accountRepository.save(BankAccount.builder()
                 .owner(owner)
                 .iban(iban)
                 .type(type)
                 .currency("RUB")
                 .balance(balance)
+                .productName(productName)
+                .packageName(packageName)
+                .monthlyTransfersLimit(monthlyTransfersLimit)
                 .active(true)
+                .createdAt(LocalDateTime.now())
+                .build()));
+    }
+
+    private DonationCampaign createCampaignIfNotExists(String title, String description, String category, String sourceUrl, String impact, BankAccount targetAccount) {
+        return donationCampaignRepository.findByTitle(title).orElseGet(() -> donationCampaignRepository.save(DonationCampaign.builder()
+                .title(title)
+                .description(description)
+                .category(category)
+                .sourceUrl(sourceUrl)
+                .impact(impact)
+                .targetAccount(targetAccount)
+                .active(true)
+                .collectedAmount(BigDecimal.ZERO)
                 .createdAt(LocalDateTime.now())
                 .build()));
     }

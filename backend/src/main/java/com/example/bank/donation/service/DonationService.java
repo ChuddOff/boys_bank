@@ -10,6 +10,7 @@ import com.example.bank.donation.repository.DonationCampaignRepository;
 import com.example.bank.transaction.dto.TransactionResponse;
 import com.example.bank.transaction.entity.BankTransaction;
 import com.example.bank.transaction.entity.TransactionType;
+import com.example.bank.transaction.repository.TransactionRepository;
 import com.example.bank.transaction.service.TransactionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ public class DonationService {
     private final DonationCampaignRepository donationCampaignRepository;
     private final BankAccountRepository bankAccountRepository;
     private final TransactionService transactionService;
+    private final TransactionRepository transactionRepository;
 
     @Transactional
     public DonationCampaignResponse createCampaign(String email, CreateCampaignRequest request) {
@@ -41,6 +43,9 @@ public class DonationService {
         DonationCampaign campaign = DonationCampaign.builder()
                 .title(request.title())
                 .description(request.description())
+                .category("Сбор пользователя")
+                .sourceUrl("https://boys-bank.example/donations/user-campaigns")
+                .impact("Перевод поступит на выбранный донатный счет пользователя Boys Bank.")
                 .targetAccount(account)
                 .active(true)
                 .collectedAmount(BigDecimal.ZERO)
@@ -56,6 +61,10 @@ public class DonationService {
 
     @Transactional
     public TransactionResponse donate(String email, DonateRequest request) {
+        transactionRepository.findByOperationId(request.operationId()).ifPresent(t -> {
+            throw new IllegalArgumentException("Операция с таким operationId уже выполнена");
+        });
+
         var from = bankAccountRepository.findWithLockById(request.fromAccountId())
                 .orElseThrow(() -> new IllegalArgumentException("Счет отправителя не найден"));
         var campaign = donationCampaignRepository.findById(request.campaignId())
@@ -67,8 +76,20 @@ public class DonationService {
         if (!campaign.getActive()) {
             throw new IllegalArgumentException("Сбор неактивен");
         }
+        if (!from.getActive()) {
+            throw new IllegalArgumentException("Счет списания не активен");
+        }
+        if (from.getType() == AccountType.DONATION) {
+            throw new IllegalArgumentException("С донатного счета нельзя переводить");
+        }
         var to = bankAccountRepository.findWithLockById(campaign.getTargetAccount().getId())
                 .orElseThrow(() -> new IllegalArgumentException("Счет получателя не найден"));
+        if (!to.getActive()) {
+            throw new IllegalArgumentException("Счет фонда не активен");
+        }
+        if (!from.getCurrency().equals(to.getCurrency())) {
+            throw new IllegalArgumentException("Пожертвования между разными валютами не поддерживаются в учебной версии");
+        }
 
         if (from.getBalance().compareTo(request.amount()) < 0) {
             throw new IllegalArgumentException("Недостаточно средств");
@@ -96,6 +117,9 @@ public class DonationService {
                 campaign.getId(),
                 campaign.getTitle(),
                 campaign.getDescription(),
+                campaign.getCategory(),
+                campaign.getSourceUrl(),
+                campaign.getImpact(),
                 campaign.getTargetAccount().getId(),
                 campaign.getCollectedAmount(),
                 campaign.getActive()

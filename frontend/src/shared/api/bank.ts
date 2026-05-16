@@ -1,5 +1,5 @@
 import { api } from './client';
-import { Account, Card, CreditEstimate, Deposit, DepositEstimate, FraudCheck, FraudTransaction, Loan, MonthlyAnalytics, Transaction, User } from '../types/bank';
+import { Account, Card, CreditEstimate, Deposit, DepositEstimate, FraudCheck, FraudTransaction, Loan, MonthlyAnalytics, Transaction, User, DonationCampaign } from '../types/bank';
 export const bankApi = {
   accounts: () => api.get<Account[]>('/api/accounts').then(r => r.data),
   account: (id: string | number) => api.get<Account>(`/api/accounts/${id}`).then(r => r.data),
@@ -27,5 +27,7 @@ export const bankApi = {
   adminReviewFraud: (id: number, status: 'SAFE'|'SUSPICIOUS', note?: string) => api.post<FraudTransaction>(`/api/admin/fraud/transactions/${id}/review`, { status, note }).then(r => r.data),
   adminUsers: () => api.get<User[]>('/api/admin/users').then(r => r.data),
   updateRole: (id: number, role: string) => api.patch<User>(`/api/admin/users/${id}/role`, { role }).then(r => r.data),
-  analytics: (year: number, month: number) => api.get<MonthlyAnalytics>(`/api/analytics/monthly?year=${year}&month=${month}`).then(r => r.data)
+  analytics: (year: number, month: number) => api.get<MonthlyAnalytics>(`/api/analytics/monthly?year=${year}&month=${month}`).then(r => r.data),
+  donationCampaigns: () => api.get<DonationCampaign[]>('/api/donations/campaigns').then(r => r.data),
+  donate: (data: { fromAccountId: number; campaignId: number; amount: number; operationId: string; message?: string }) => api.post<Transaction>('/api/donations/send', data).then(r => r.data)
 };

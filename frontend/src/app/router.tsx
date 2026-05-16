@@ -9,6 +9,7 @@ import { DashboardPage } from '../pages/DashboardPage';
 import { DepositApplicationPage } from '../pages/DepositApplicationPage';
 import { DepositsPage } from '../pages/DepositsPage';
 import { FraudPage } from '../pages/FraudPage';
+import { DonationsPage } from '../pages/DonationsPage';
 import { FraudTransactionsPage } from '../pages/FraudTransactionsPage';
 import { LoanApplicationPage } from '../pages/LoanApplicationPage';
 import { LoansPage } from '../pages/LoansPage';
@@ -26,7 +27,7 @@ export const router = createBrowserRouter([
   { path: '/register', element: <RegisterPage/> },
   { element: <Protected><AppLayout/></Protected>, children: [
     { path: '/dashboard', element: <DashboardPage/> }, { path: '/accounts', element: <AccountsPage/> }, { path: '/accounts/:id', element: <AccountDetailsPage/> },
-    { path: '/transactions', element: <TransactionsPage/> }, { path: '/transfers/new', element: <TransferPage/> }, { path: '/cards', element: <CardsPage/> },
+    { path: '/transactions', element: <TransactionsPage/> }, { path: '/transfers/new', element: <TransferPage/> }, { path: '/donations', element: <DonationsPage/> }, { path: '/cards', element: <CardsPage/> },
     { path: '/profile', element: <ProfilePage/> }, { path: '/loans', element: <LoansPage/> }, { path: '/loans/new', element: <LoanApplicationPage/> },
     { path: '/deposits', element: <DepositsPage/> }, { path: '/deposits/new', element: <DepositApplicationPage/> }, { path: '/fraud', element: <FraudPage/> },
     { path: '/fraud/transactions', element: <FraudTransactionsPage/> }, { path: '/admin', element: <Protected admin><AdminPage/></Protected> }
