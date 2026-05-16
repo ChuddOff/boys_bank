@@ -10,4 +10,5 @@ public interface TransactionRepository extends JpaRepository<BankTransaction, Lo
     List<BankTransaction> findByFromAccountOwnerEmailOrToAccountOwnerEmailOrderByCreatedAtDesc(String fromEmail, String toEmail);
     Optional<BankTransaction> findByOperationId(String operationId);
     List<BankTransaction> findByFromAccountIdOrToAccountIdOrderByCreatedAtDesc(Long fromAccountId, Long toAccountId);
+    List<BankTransaction> findAllByOrderByCreatedAtDesc();
 }

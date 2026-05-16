@@ -1,6 +1,8 @@
 package com.example.bank.credit.controller;
 
 import com.example.bank.credit.dto.CreditEstimateResponse;
+import com.example.bank.product.service.ProductRateService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -11,15 +13,18 @@ import java.math.RoundingMode;
 
 @RestController
 @RequestMapping("/api/credit")
+@RequiredArgsConstructor
 public class CreditController {
+
+    private final ProductRateService productRateService;
 
     @GetMapping("/estimate")
     public CreditEstimateResponse estimate(@RequestParam BigDecimal amount,
-                                           @RequestParam int months,
-                                           @RequestParam(defaultValue = "18.0") BigDecimal annualRate) {
+                                           @RequestParam int months) {
         if (amount.compareTo(BigDecimal.ZERO) <= 0 || months <= 0) {
             throw new IllegalArgumentException("Некорректные параметры кредита");
         }
+        BigDecimal annualRate = productRateService.loanRateFor(amount, months);
         BigDecimal monthlyRate = annualRate.divide(BigDecimal.valueOf(1200), 10, RoundingMode.HALF_UP);
         BigDecimal onePlus = BigDecimal.ONE.add(monthlyRate);
         BigDecimal numerator = amount.multiply(monthlyRate).multiply(onePlus.pow(months));

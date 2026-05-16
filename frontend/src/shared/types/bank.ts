@@ -12,3 +12,6 @@ export interface Deposit { id: number; accountId: number; principal: number; ann
 export interface FraudCheck { suspicious: boolean; riskScore: number; reason: string; source: string }
 export interface FraudTransaction { id: number; transaction: Transaction; suspicious: boolean; riskScore: number; reason: string; source: string; status: 'NEW' | 'SAFE' | 'SUSPICIOUS'; reviewerNote?: string | null }
 export interface MonthlyAnalytics { month: string; outgoingOperations: number; outgoingTotal: number; incomingOperations: number; incomingTotal: number }
+
+export interface CreditEstimate { requestedAmount: number; termMonths: number; annualRate: number; monthlyPayment: number; totalPayment: number; overpayment: number }
+export interface DepositEstimate { amount: number; termMonths: number; annualRate: number; maturityDate: string; projectedPayout: number; income: number }

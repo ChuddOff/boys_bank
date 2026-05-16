@@ -6,6 +6,7 @@ import com.example.bank.loan.dto.LoanApplicationResponse;
 import com.example.bank.loan.entity.LoanApplication;
 import com.example.bank.loan.entity.LoanApplicationStatus;
 import com.example.bank.loan.repository.LoanApplicationRepository;
+import com.example.bank.product.service.ProductRateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +20,7 @@ import java.util.List;
 public class LoanService {
     private final LoanApplicationRepository repository;
     private final CustomerRepository customerRepository;
+    private final ProductRateService productRateService;
 
     public List<LoanApplicationResponse> loans(String email) {
         return repository.findByCustomerEmailOrderByCreatedAtDesc(email).stream().map(this::map).toList();
@@ -34,7 +36,7 @@ public class LoanService {
                 .customer(customer)
                 .amount(request.amount())
                 .termMonths(request.termMonths())
-                .annualRate(request.annualRate() == null ? BigDecimal.valueOf(18.0) : request.annualRate())
+                .annualRate(productRateService.loanRateFor(request.amount(), request.termMonths()))
                 .purpose(request.purpose())
                 .status(LoanApplicationStatus.PENDING)
                 .createdAt(LocalDateTime.now())

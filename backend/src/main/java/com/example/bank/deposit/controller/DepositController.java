@@ -1,6 +1,7 @@
 package com.example.bank.deposit.controller;
 
 import com.example.bank.deposit.dto.DepositResponse;
+import com.example.bank.deposit.dto.DepositEstimateResponse;
 import com.example.bank.deposit.dto.OpenDepositRequest;
 import com.example.bank.deposit.service.DepositService;
 import jakarta.validation.Valid;
@@ -8,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -25,5 +27,10 @@ public class DepositController {
     @GetMapping
     public List<DepositResponse> myDeposits(Authentication authentication) {
         return depositService.myDeposits(authentication.getName());
+    }
+
+    @GetMapping("/estimate")
+    public DepositEstimateResponse estimate(@RequestParam BigDecimal amount, @RequestParam Integer termMonths) {
+        return depositService.estimate(amount, termMonths);
     }
 }
