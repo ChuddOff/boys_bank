@@ -40,7 +40,7 @@ Backend слушает `http://localhost:8080`.
 | `JWT_EXPIRATION_SECONDS` | `3600` | TTL JWT |
 | `fraud.api.url` | `http://localhost:8000/api/v1/check` | URL fraudulent_checker |
 
-CORS включен для Vite dev server: `http://localhost:5173` и `http://127.0.0.1:5173`.
+CORS включен для Vite dev server (`http://localhost:5173`, `http://127.0.0.1:5173`) и production frontend `https://boys-bank.vercel.app`.
 
 ## Запуск frontend
 
