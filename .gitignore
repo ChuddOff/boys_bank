@@ -31,3 +31,13 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Monorepo ###
+backend/target/
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+fraudulent_checker/.venv/
+__pycache__/
+.pytest_cache/
+*.tsbuildinfo

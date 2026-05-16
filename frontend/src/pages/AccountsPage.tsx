@@ -1,0 +1,6 @@
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Link } from 'react-router-dom';
+import { bankApi } from '../shared/api/bank';
+import { EmptyState, ErrorState, LoadingState } from '../shared/components/State';
+import { money } from '../shared/lib/utils';
+export function AccountsPage(){const qc=useQueryClient(); const q=useQuery({queryKey:['accounts'],queryFn:bankApi.accounts}); const create=useMutation({mutationFn:()=>bankApi.createAccount({type:'CURRENT',currency:'RUB'}),onSuccess:()=>qc.invalidateQueries({queryKey:['accounts']})}); if(q.isLoading)return <LoadingState/>; if(q.error)return <ErrorState error={q.error}/>; return <div className="space-y-5"><div className="flex items-center justify-between"><h2 className="text-3xl font-black">Счета</h2><button className="btn-secondary" onClick={()=>create.mutate()}>Открыть счет</button></div>{!q.data?.length?<EmptyState/>:<div className="grid gap-4 md:grid-cols-2">{q.data.map(a=><Link className="card transition hover:-translate-y-1" to={`/accounts/${a.id}`} key={a.id}><div className="flex justify-between"><span className="badge">{a.type}</span><span>{a.active?'Активен':'Закрыт'}</span></div><h3 className="mt-8 text-3xl font-black">{money(a.balance,a.currency)}</h3><p className="mt-2 text-black/50">{a.iban}</p></Link>)}</div>}</div>}

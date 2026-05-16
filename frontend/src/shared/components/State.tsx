@@ -1,0 +1,4 @@
+import { AlertTriangle, Inbox } from 'lucide-react';
+export function LoadingState({ rows = 3 }: { rows?: number }) { return <div className="space-y-3">{Array.from({ length: rows }).map((_, i) => <div key={i} className="skeleton h-20" />)}</div>; }
+export function EmptyState({ title = 'Пока пусто', text = 'Здесь появятся данные после первых операций.' }) { return <div className="card flex flex-col items-center gap-3 py-12 text-center"><Inbox className="h-10 w-10"/><h3 className="text-xl font-bold">{title}</h3><p className="max-w-md text-black/60">{text}</p></div>; }
+export function ErrorState({ error }: { error: unknown }) { return <div className="card border-red-200 bg-red-50 text-red-800"><AlertTriangle/><b>Ошибка</b><p>{error instanceof Error ? error.message : 'Не удалось загрузить данные'}</p></div>; }
