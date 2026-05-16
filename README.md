@@ -31,7 +31,8 @@ Backend слушает `http://localhost:8080`.
 | Переменная | Default | Назначение |
 | --- | --- | --- |
 | `SERVER_PORT` | `8080` | Порт Spring Boot |
-| `DB_URL` | `jdbc:h2:mem:bankdb;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE` | JDBC URL |
+| `DATABASE_URL` | пусто | Render/PostgreSQL URL вида `postgresql://user:password@host:5432/db`; backend сам конвертирует его в JDBC |
+| `DB_URL` | `jdbc:h2:mem:bankdb;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE` | JDBC URL или `postgresql://...` URL |
 | `DB_USERNAME` | `sa` | Пользователь БД |
 | `DB_PASSWORD` | пусто | Пароль БД |
 | `DB_DRIVER` | `org.h2.Driver` | JDBC driver |
