@@ -32,6 +32,13 @@ public class FraudTransactionService {
                 .toList();
     }
 
+    public List<FraudTransactionResponse> all() {
+        return transactionRepository.findAllByOrderByCreatedAtDesc()
+                .stream()
+                .map(this::map)
+                .toList();
+    }
+
     public FraudTransactionResponse get(String email, Long id) {
         BankTransaction tx = findOwned(email, id);
         return map(tx);
@@ -40,6 +47,21 @@ public class FraudTransactionService {
     @Transactional
     public FraudTransactionResponse review(String email, Long id, FraudReviewRequest request) {
         BankTransaction tx = findOwned(email, id);
+        FraudReview review = reviewRepository.findByTransactionId(id).orElseGet(() -> FraudReview.builder()
+                .transaction(tx)
+                .status(FraudReviewStatus.NEW)
+                .build());
+        review.setStatus(request.status());
+        review.setReviewerNote(request.note());
+        review.setUpdatedAt(LocalDateTime.now());
+        reviewRepository.save(review);
+        return map(tx);
+    }
+
+    @Transactional
+    public FraudTransactionResponse adminReview(Long id, FraudReviewRequest request) {
+        BankTransaction tx = transactionRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Транзакция не найдена"));
         FraudReview review = reviewRepository.findByTransactionId(id).orElseGet(() -> FraudReview.builder()
                 .transaction(tx)
                 .status(FraudReviewStatus.NEW)
