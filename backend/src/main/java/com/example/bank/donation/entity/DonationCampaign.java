@@ -26,6 +26,18 @@ public class DonationCampaign {
     @Column(nullable = false, length = 2000)
     private String description;
 
+    @Column(length = 80)
+    @Builder.Default
+    private String category = "Помощь";
+
+    @Column(length = 500)
+    @Builder.Default
+    private String sourceUrl = "https://boys-bank.example/donations";
+
+    @Column(length = 160)
+    @Builder.Default
+    private String impact = "Ваш перевод помогает быстрее закрывать благотворительные сборы.";
+
     @ManyToOne(optional = false)
     @JoinColumn(name = "target_account_id")
     private BankAccount targetAccount;

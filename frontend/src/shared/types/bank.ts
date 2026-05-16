@@ -19,3 +19,5 @@ export interface MonthlyAnalytics { month: string; outgoingOperations: number; o
 
 export interface CreditEstimate { requestedAmount: number; termMonths: number; annualRate: number; monthlyPayment: number; totalPayment: number; overpayment: number }
 export interface DepositEstimate { amount: number; termMonths: number; annualRate: number; maturityDate: string; projectedPayout: number; income: number }
+
+export interface DonationCampaign { id: number; title: string; description: string; category?: string | null; sourceUrl?: string | null; impact?: string | null; targetAccountId: number; collectedAmount: number; active: boolean }
