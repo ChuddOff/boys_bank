@@ -89,6 +89,17 @@ public class CustomerService {
         customer.setFirstName(request.firstName());
         customer.setLastName(request.lastName());
         customer.setEmail(newEmail);
+        customer.setPhone(request.phone());
+        customer.setCity(request.city());
+        customer.setAddressLine(request.addressLine());
+        customer.setPassportNumber(request.passportNumber());
+        customer.setPassportIssuedBy(request.passportIssuedBy());
+        customer.setEmployer(request.employer());
+        customer.setJobTitle(request.jobTitle());
+        customer.setMonthlyIncome(request.monthlyIncome());
+        customer.setTwoFactorEnabled(Boolean.TRUE.equals(request.twoFactorEnabled()));
+        customer.setPushNotifications(!Boolean.FALSE.equals(request.pushNotifications()));
+        customer.setMarketingNotifications(Boolean.TRUE.equals(request.marketingNotifications()));
         return map(customer);
     }
 
@@ -114,7 +125,18 @@ public class CustomerService {
                 customer.getLastName(),
                 customer.getEmail(),
                 customer.getRoles().stream().map(Role::getName).collect(Collectors.toSet()),
-                customer.getCreatedAt()
+                customer.getCreatedAt(),
+                customer.getPhone(),
+                customer.getCity(),
+                customer.getAddressLine(),
+                customer.getPassportNumber(),
+                customer.getPassportIssuedBy(),
+                customer.getEmployer(),
+                customer.getJobTitle(),
+                customer.getMonthlyIncome(),
+                customer.getTwoFactorEnabled(),
+                customer.getPushNotifications(),
+                customer.getMarketingNotifications()
         );
     }
 }

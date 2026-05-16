@@ -10,6 +10,9 @@ public record AccountResponse(
         AccountType type,
         BigDecimal balance,
         String currency,
-        Boolean active
+        Boolean active,
+        String productName,
+        String packageName,
+        Integer monthlyTransfersLimit
 ) {
 }

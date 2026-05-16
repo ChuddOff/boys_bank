@@ -42,13 +42,17 @@ public class DepositService {
         }
 
         account.setBalance(account.getBalance().subtract(request.amount()));
-        BigDecimal annualRate = productRateService.depositRateFor(request.amount(), request.termMonths());
+        String productName = normalizeProduct(request.productName());
+        BigDecimal annualRate = adjustRate(productRateService.depositRateFor(request.amount(), request.termMonths()), productName, request.earlyWithdrawal());
 
         LocalDate openedAt = LocalDate.now();
         Deposit deposit = Deposit.builder()
                 .account(account)
                 .principal(request.amount())
                 .annualRate(annualRate)
+                .productName(productName)
+                .capitalization(Boolean.TRUE.equals(request.capitalization()))
+                .earlyWithdrawal(Boolean.TRUE.equals(request.earlyWithdrawal()))
                 .termMonths(request.termMonths())
                 .openedAt(openedAt)
                 .maturityDate(openedAt.plusMonths(request.termMonths()))
@@ -87,8 +91,33 @@ public class DepositService {
                 deposit.getOpenedAt(),
                 deposit.getMaturityDate(),
                 projected,
-                deposit.getActive()
+                deposit.getActive(),
+                deposit.getProductName(),
+                deposit.getCapitalization(),
+                deposit.getEarlyWithdrawal()
         );
+    }
+
+    private String normalizeProduct(String requested) {
+        if (requested == null || requested.isBlank()) {
+            return "Boys Classic";
+        }
+        return requested.trim();
+    }
+
+    private BigDecimal adjustRate(BigDecimal baseRate, String productName, Boolean earlyWithdrawal) {
+        BigDecimal rate = baseRate;
+        String normalized = productName.toLowerCase();
+        if (normalized.contains("max")) {
+            rate = rate.add(BigDecimal.valueOf(0.7));
+        }
+        if (normalized.contains("flex")) {
+            rate = rate.subtract(BigDecimal.valueOf(0.4));
+        }
+        if (Boolean.TRUE.equals(earlyWithdrawal)) {
+            rate = rate.subtract(BigDecimal.valueOf(0.3));
+        }
+        return rate.max(BigDecimal.valueOf(1));
     }
 
     private void validateAmountAndTerm(BigDecimal amount, Integer months) {

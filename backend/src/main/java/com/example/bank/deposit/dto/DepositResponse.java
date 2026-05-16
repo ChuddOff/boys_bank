@@ -12,6 +12,9 @@ public record DepositResponse(
         LocalDate openedAt,
         LocalDate maturityDate,
         BigDecimal projectedPayout,
-        Boolean active
+        Boolean active,
+        String productName,
+        Boolean capitalization,
+        Boolean earlyWithdrawal
 ) {
 }

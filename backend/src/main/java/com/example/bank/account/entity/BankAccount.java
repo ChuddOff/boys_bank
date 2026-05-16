@@ -37,6 +37,18 @@ public class BankAccount {
 
     @Column(nullable = false)
     @Builder.Default
+    private String productName = "Boys Everyday";
+
+    @Column(nullable = false)
+    @Builder.Default
+    private String packageName = "Стандарт";
+
+    @Column(nullable = false)
+    @Builder.Default
+    private Integer monthlyTransfersLimit = 50;
+
+    @Column(nullable = false)
+    @Builder.Default
     private Boolean active = true;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
