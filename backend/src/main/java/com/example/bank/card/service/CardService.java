@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,9 +34,15 @@ public class CardService {
         if (!account.getOwner().getEmail().equalsIgnoreCase(email)) {
             throw new SecurityException("Нет доступа к счету");
         }
+        CardPlan plan = planFor(request.tier());
         BankCard card = BankCard.builder()
                 .account(account)
                 .maskedNumber("2200 **** **** " + (1000 + random.nextInt(9000)))
+                .tier(plan.tier())
+                .displayName(plan.displayName())
+                .cashbackRate(plan.cashbackRate())
+                .monthlyFee(plan.monthlyFee())
+                .dailyLimit(plan.dailyLimit())
                 .expiresAt(LocalDate.now().plusYears(4))
                 .status(CardStatus.ACTIVE)
                 .createdAt(LocalDateTime.now())
@@ -54,6 +61,29 @@ public class CardService {
     }
 
     private CardResponse map(BankCard card) {
-        return new CardResponse(card.getId(), card.getAccount().getId(), card.getMaskedNumber(), card.getExpiresAt(), card.getStatus());
+        return new CardResponse(
+                card.getId(),
+                card.getAccount().getId(),
+                card.getMaskedNumber(),
+                card.getExpiresAt(),
+                card.getStatus(),
+                card.getTier(),
+                card.getDisplayName(),
+                card.getCashbackRate(),
+                card.getMonthlyFee(),
+                card.getDailyLimit()
+        );
     }
+
+    private CardPlan planFor(String tier) {
+        String normalized = tier == null ? "BLACK" : tier.trim().toUpperCase();
+        return switch (normalized) {
+            case "PLATINUM" -> new CardPlan("PLATINUM", "Boys Bank Platinum", BigDecimal.valueOf(3.0), BigDecimal.valueOf(499), BigDecimal.valueOf(500000));
+            case "GOLD" -> new CardPlan("GOLD", "Boys Bank Gold Premium", BigDecimal.valueOf(2.2), BigDecimal.valueOf(199), BigDecimal.valueOf(300000));
+            default -> new CardPlan("BLACK", "Boys Bank Black", BigDecimal.valueOf(1.5), BigDecimal.ZERO, BigDecimal.valueOf(150000));
+        };
+    }
+
+    private record CardPlan(String tier, String displayName, BigDecimal cashbackRate, BigDecimal monthlyFee, BigDecimal dailyLimit) {}
 }
+

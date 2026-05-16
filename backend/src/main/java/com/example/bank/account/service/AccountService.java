@@ -31,11 +31,16 @@ public class AccountService {
 
         String currency = request.currency() == null ? "RUB" : request.currency().toUpperCase(Locale.ROOT);
         AccountType type = request.type() == null ? AccountType.CURRENT : request.type();
+        String productName = normalizeAccountProduct(request.productName(), type);
+        String packageName = request.packageName() == null || request.packageName().isBlank() ? "Стандарт" : request.packageName().trim();
 
         var account = BankAccount.builder()
                 .owner(owner)
                 .type(type)
                 .currency(currency)
+                .productName(productName)
+                .packageName(packageName)
+                .monthlyTransfersLimit(monthlyLimitFor(productName))
                 .createdAt(LocalDateTime.now())
                 .balance(BigDecimal.ZERO)
                 .active(true)
@@ -92,8 +97,33 @@ public class AccountService {
                 account.getType(),
                 account.getBalance(),
                 account.getCurrency(),
-                account.getActive()
+                account.getActive(),
+                account.getProductName(),
+                account.getPackageName(),
+                account.getMonthlyTransfersLimit()
         );
+    }
+
+    private String normalizeAccountProduct(String requested, AccountType type) {
+        if (requested == null || requested.isBlank()) {
+            return switch (type) {
+                case SAVINGS -> "Boys Save";
+                case DONATION -> "Boys Charity";
+                default -> "Boys Everyday";
+            };
+        }
+        return requested.trim();
+    }
+
+    private Integer monthlyLimitFor(String productName) {
+        String normalized = productName.toLowerCase(Locale.ROOT);
+        if (normalized.contains("premium") || normalized.contains("platinum")) {
+            return 300;
+        }
+        if (normalized.contains("save") || normalized.contains("накоп")) {
+            return 25;
+        }
+        return 100;
     }
 
     private String generateIban() {

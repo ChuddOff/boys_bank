@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotNull;
 
 public record CreateAccountRequest(
         @NotNull AccountType type,
-        String currency
+        String currency,
+        String productName,
+        String packageName
 ) {
 }

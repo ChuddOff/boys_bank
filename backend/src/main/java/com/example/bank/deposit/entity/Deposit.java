@@ -31,6 +31,18 @@ public class Deposit {
     private BigDecimal annualRate;
 
     @Column(nullable = false)
+    @Builder.Default
+    private String productName = "Boys Classic";
+
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean capitalization = false;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean earlyWithdrawal = false;
+
+    @Column(nullable = false)
     private Integer termMonths;
 
     @Column(nullable = false)

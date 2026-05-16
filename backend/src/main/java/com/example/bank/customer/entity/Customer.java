@@ -31,6 +31,27 @@ public class Customer {
     @Column(nullable = false)
     private String password;
 
+    private String phone;
+    private String city;
+    private String addressLine;
+    private String passportNumber;
+    private String passportIssuedBy;
+    private String employer;
+    private String jobTitle;
+    private java.math.BigDecimal monthlyIncome;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean twoFactorEnabled = false;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean pushNotifications = true;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean marketingNotifications = false;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "customer_roles",

@@ -27,6 +27,26 @@ public class BankCard {
     private String maskedNumber;
 
     @Column(nullable = false)
+    @Builder.Default
+    private String tier = "BLACK";
+
+    @Column(nullable = false)
+    @Builder.Default
+    private String displayName = "Boys Bank Black";
+
+    @Column(nullable = false, precision = 5, scale = 2)
+    @Builder.Default
+    private java.math.BigDecimal cashbackRate = java.math.BigDecimal.valueOf(1.5);
+
+    @Column(nullable = false, precision = 19, scale = 2)
+    @Builder.Default
+    private java.math.BigDecimal monthlyFee = java.math.BigDecimal.ZERO;
+
+    @Column(nullable = false, precision = 19, scale = 2)
+    @Builder.Default
+    private java.math.BigDecimal dailyLimit = java.math.BigDecimal.valueOf(150000);
+
+    @Column(nullable = false)
     private LocalDate expiresAt;
 
     @Enumerated(EnumType.STRING)
