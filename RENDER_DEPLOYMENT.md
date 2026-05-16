@@ -1,14 +1,14 @@
 # Deploy backend to Render with Docker
 
-This repository contains a Spring Boot backend in `backend/`. The root `Dockerfile` builds and runs that backend as a Docker web service on Render.
+This repository contains a Spring Boot backend in `backend/`. The backend `Dockerfile` lives in `backend/Dockerfile` and builds/runs that service on Render.
 
 ## Render service settings
 
-Create a **Web Service** on Render and select **Docker** as the runtime. Render detects the `Dockerfile` at the repository root.
+Create a **Web Service** on Render and select **Docker** as the runtime. Point Render to the Dockerfile inside the `backend/` directory.
 
 Recommended settings:
 
-- **Root Directory**: leave empty
+- **Root Directory**: `backend`
 - **Dockerfile Path**: `Dockerfile`
 - **Docker Build Context Directory**: `.`
 - **Health Check Path**: `/healthz`
