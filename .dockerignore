@@ -1,0 +1,11 @@
+.git
+.gitignore
+**/target
+**/build
+**/dist
+**/node_modules
+**/.env
+**/.env.*
+**/*.log
+frontend
+fraudulent_checker
