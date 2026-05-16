@@ -1,10 +1,12 @@
 # Bank Backend API Contracts
 
+> Backend now lives in `backend/`; frontend lives in `frontend/`; the anti-fraud service lives in `fraudulent_checker/`.
+
 Документ для синхронизации backend ↔ frontend и backend ↔ ML (антифрод сервис).
 
 ## 1) Endpoint'ы для связи с frontend
 
-Все endpoint'ы банка защищены JWT (кроме `/api/auth/**`).
+Все endpoint'ы банка защищены JWT (кроме `POST /api/auth/register` и `POST /api/auth/login`).
 
 ## Аутентификация
 
@@ -29,6 +31,13 @@
 **Response (JSON):**
 - `token: string` — JWT для `Authorization: Bearer <token>`.
 
+
+### `GET /api/auth/me`
+Текущий пользователь и роли.
+
+### `POST /api/auth/logout`
+Stateless logout-заглушка для frontend.
+
 ---
 
 ## Счета
@@ -51,6 +60,12 @@
 ### `GET /api/accounts`
 Получить все счета текущего пользователя.
 
+### `GET /api/accounts/{accountId}`
+Получить один счет.
+
+### `GET /api/accounts/{accountId}/balance`
+Получить баланс счета.
+
 **Response:** `AccountResponse[]`
 
 ### `POST /api/accounts/{accountId}/top-up`
@@ -61,11 +76,17 @@
 
 **Response:** обновленный `AccountResponse`.
 
+### `POST /api/accounts/{accountId}/withdraw`
+Списать средства со счета.
+
+**Request (JSON):**
+- `amount: number > 0`
+
 ---
 
 ## Переводы/операции
 
-### `POST /api/transactions/transfer`
+### `POST /api/transactions/transfer` или `POST /api/transfers`
 Перевод между счетами. Поддерживает текст назначения платежа.
 
 **Request (JSON):**
@@ -85,7 +106,7 @@
 - `createdAt: datetime`
 - `description: string | null`
 
-### `GET /api/transactions/history`
+### `GET /api/transactions` или `GET /api/transactions/history`
 История операций пользователя.
 
 **Response:** `TransactionResponse[]`

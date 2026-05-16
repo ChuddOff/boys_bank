@@ -1,0 +1,9 @@
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { Link, useNavigate } from 'react-router-dom';
+import { z } from 'zod';
+import { authApi } from '../features/auth/api';
+import { useAuthStore } from '../features/auth/store';
+import { AuthShell, Field } from './LoginPage';
+const schema=z.object({firstName:z.string().min(2,'Введите имя'),lastName:z.string().min(2,'Введите фамилию'),email:z.string().email('Введите email'),password:z.string().min(6,'Минимум 6 символов')}); type Form=z.infer<typeof schema>;
+export function RegisterPage(){const setToken=useAuthStore(s=>s.setToken); const navigate=useNavigate(); const {register,handleSubmit,formState:{errors,isSubmitting},setError}=useForm<Form>({resolver:zodResolver(schema)}); return <AuthShell title="Открыть доступ" subtitle="Регистрация клиента и JWT-сессия для учебного проекта."><form className="space-y-4" onSubmit={handleSubmit(async d=>{try{const r=await authApi.register(d); setToken(r.token); navigate('/dashboard')}catch(e){setError('root',{message:e instanceof Error?e.message:'Ошибка регистрации'})}})}><div className="grid gap-3 sm:grid-cols-2"><Field label="Имя" error={errors.firstName?.message}><input className="input" {...register('firstName')}/></Field><Field label="Фамилия" error={errors.lastName?.message}><input className="input" {...register('lastName')}/></Field></div><Field label="Email" error={errors.email?.message}><input className="input" {...register('email')}/></Field><Field label="Пароль" error={errors.password?.message}><input className="input" type="password" {...register('password')}/></Field>{errors.root&&<p className="text-sm text-red-600">{errors.root.message}</p>}<button disabled={isSubmitting} className="btn w-full">Создать аккаунт</button><p className="text-center text-sm">Уже есть доступ? <Link className="font-bold underline" to="/login">Войти</Link></p></form></AuthShell>}
